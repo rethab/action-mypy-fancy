@@ -1,6 +1,6 @@
 import * as Core from '@actions/core'
 import * as Exec from '@actions/exec'
-import {action} from './action'
+import {action} from '../lib/action'
 
 describe('action', () => {
   const info = jest.fn()
@@ -22,6 +22,14 @@ describe('action', () => {
 
     expect(getInput).toHaveBeenCalledWith('github-token', {required: true})
     expect(getOctokit).toHaveBeenCalledWith('my-secret-token')
+  })
+
+  it('should pass arguments to exec call', async () => {
+    await action(core, exec, getOctokit)
+
+    expect(getExecOutput).toHaveBeenCalledWith('mypy', ['test'], {
+      ignoreReturnCode: true,
+    })
   })
 
   it('should pass parse errors to create check endpoint', async () => {

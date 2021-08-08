@@ -10,7 +10,9 @@ export async function action(
 ): Promise<void> {
   const token = core.getInput('github-token', {required: true})
   const octokit = getOctokit(token)
-  const {stdout} = await exec.getExecOutput('mypy', ['test'])
+  const {stdout} = await exec.getExecOutput('mypy', ['test'], {
+    ignoreReturnCode: true,
+  })
 
   const annotations = parseLogs(core, stdout)
 
