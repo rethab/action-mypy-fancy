@@ -2,10 +2,12 @@ import * as Core from '@actions/core'
 import * as Exec from '@actions/exec'
 import {getOctokit as GetOctokit} from '@actions/github'
 import {GitHub} from '@actions/github/lib/utils'
+import {Context} from '@actions/github/lib/context'
 
 export async function action(
   core: typeof Core,
   exec: typeof Exec,
+  context: Context,
   getOctokit: typeof GetOctokit
 ): Promise<void> {
   const token = core.getInput('github-token', {required: true})
@@ -16,7 +18,7 @@ export async function action(
 
   const annotations = parseLogs(core, stdout)
 
-  await sendChecks(octokit, annotations)
+  await sendChecks(context, octokit, annotations)
 
   if (exitCode !== 0) {
     throw new Error('mypy has returned errors')
@@ -50,11 +52,13 @@ function parseLine(line: string): Annotation | null {
 }
 
 async function sendChecks(
+  context: Context,
   octokit: InstanceType<typeof GitHub>,
   annotations: Annotation[]
 ): Promise<void> {
   octokit.rest.checks.create({
-    repo: 'foo',
+    repo: context.repo.repo,
+    owner: context.repo.owner,
     output: {
       annotations,
     },
