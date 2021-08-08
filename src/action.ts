@@ -6,14 +6,7 @@ export async function action(
   core: typeof Core,
   exec: typeof Exec
 ): Promise<void> {
-  const matchersDir = path.join(__dirname, '../')
-  const matcherPath = path.join(matchersDir, 'mypy.json')
+  const matcherPath = path.join(__dirname, '../', 'mypy.json')
   core.info(`##[add-matcher]${matcherPath}`)
-  const exitCode = await exec.exec('mypy', ['test'], {ignoreReturnCode: true})
-
-  // todo: remove matcher again
-
-  if (exitCode !== 0) {
-    throw new Error('mypy has returned errors')
-  }
+  await exec.exec('mypy', ['test'])
 }

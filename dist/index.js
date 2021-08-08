@@ -13,14 +13,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.action = void 0;
 const path_1 = __importDefault(__nccwpck_require__(622));
 async function action(core, exec) {
-    const matchersDir = path_1.default.join(__dirname, '../');
-    const matcherPath = path_1.default.join(matchersDir, 'mypy.json');
+    const matcherPath = path_1.default.join(__dirname, '../', 'mypy.json');
     core.info(`##[add-matcher]${matcherPath}`);
-    const exitCode = await exec.exec('mypy', ['test'], { ignoreReturnCode: true });
-    // todo: remove matcher again
-    if (exitCode !== 0) {
-        throw new Error('mypy has returned errors');
-    }
+    await exec.exec('mypy', ['test']);
 }
 exports.action = action;
 
