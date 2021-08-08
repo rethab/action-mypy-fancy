@@ -11,7 +11,7 @@
     "package": "ncc build --license licenses.txt",
     "test": "jest --coverage",
     "check-all": "npm run format-check && npm run lint && npm run build && npm test",
-    "all": "npm run ci && npm run format && npm run lint && npm run build && npm test && npm run package"
+    "all": "npm ci && npm run format && npm run lint && npm run build && npm test && npm run package"
   },
   "repository": {
     "type": "git",
@@ -24,9 +24,11 @@
   "author": "Reto ",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.4.0"
+    "@actions/core": "^1.4.0",
+    "@actions/exec": "^1.1.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.24",
     "@types/node": "^15.14.0",
     "@typescript-eslint/parser": "^4.29.0",
     "@vercel/ncc": "^0.29.0",
