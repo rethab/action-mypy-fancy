@@ -11,11 +11,14 @@ exports.action = void 0;
 async function action(core, exec, getOctokit) {
     const token = core.getInput('github-token', { required: true });
     const octokit = getOctokit(token);
-    const { stdout } = await exec.getExecOutput('mypy', ['test'], {
+    const { stdout, exitCode } = await exec.getExecOutput('mypy', ['test'], {
         ignoreReturnCode: true,
     });
     const annotations = parseLogs(core, stdout);
     await sendChecks(octokit, annotations);
+    if (exitCode !== 0) {
+        throw new Error('mypy has returned errors');
+    }
 }
 exports.action = action;
 function parseLogs(core, logs) {
@@ -85,7 +88,7 @@ async function run() {
         core.setFailed(error.message);
     }
 }
-run();
+void run();
 
 
 /***/ }),

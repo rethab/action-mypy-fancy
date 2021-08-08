@@ -10,13 +10,17 @@ export async function action(
 ): Promise<void> {
   const token = core.getInput('github-token', {required: true})
   const octokit = getOctokit(token)
-  const {stdout} = await exec.getExecOutput('mypy', ['test'], {
+  const {stdout, exitCode} = await exec.getExecOutput('mypy', ['test'], {
     ignoreReturnCode: true,
   })
 
   const annotations = parseLogs(core, stdout)
 
   await sendChecks(octokit, annotations)
+
+  if (exitCode !== 0) {
+    throw new Error('mypy has returned errors')
+  }
 }
 
 interface Annotation {

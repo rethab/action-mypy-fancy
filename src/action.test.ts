@@ -1,6 +1,6 @@
 import * as Core from '@actions/core'
 import * as Exec from '@actions/exec'
-import {action} from '../lib/action'
+import {action} from './action'
 
 describe('action', () => {
   const info = jest.fn()
@@ -16,7 +16,7 @@ describe('action', () => {
 
   it('should create the octokit using the github-token input', async () => {
     getInput.mockReturnValue('my-secret-token')
-    getExecOutput.mockResolvedValue({stdout: ''})
+    getExecOutput.mockResolvedValue({stdout: '', exitCode: 0})
 
     await action(core, exec, getOctokit)
 
@@ -32,14 +32,29 @@ describe('action', () => {
     })
   })
 
+  it('should throw error after posting checks if exit code was one', async () => {
+    getExecOutput.mockResolvedValue({
+      stdout: 'test/main.py:2: error: Unsupported',
+      exitCode: 1,
+    })
+
+    await expect(action(core, exec, getOctokit)).rejects.toThrow(
+      'mypy has returned errors'
+    )
+
+    expect(createCheck).toHaveBeenCalledTimes(1)
+  })
+
   it('should pass parse errors to create check endpoint', async () => {
     getExecOutput.mockResolvedValue({
+      exitCode: 1,
       stdout: `test/main.py:2: error: Unsupported operand types for + ("str" and "int")
 test/main.py:4: error: Name "add" already defined on line 1
 test/main.py:5: error: Unsupported operand types for + ("str" and "int")
 Found 3 errors in 1 file (checked 1 source file)`,
     })
-    await action(core, exec, getOctokit)
+
+    await expect(action(core, exec, getOctokit)).rejects.toThrow()
 
     expect(createCheck).toHaveBeenCalledWith({
       repo: '',
