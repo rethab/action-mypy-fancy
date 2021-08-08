@@ -1,10 +1,6 @@
 name: 'mypy-fancy'
 description: 'mypy action that reports errors annotations'
 author: 'Reto'
-inputs:
-  github-token:
-    required: true
-    description: 'the token used to authenticate against github'
 runs:
   using: 'node12'
   main: 'dist/index.js'
