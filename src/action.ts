@@ -1,66 +1,17 @@
 import * as Core from '@actions/core'
 import * as Exec from '@actions/exec'
-import {getOctokit as GetOctokit} from '@actions/github'
-import {GitHub} from '@actions/github/lib/utils'
-import {Context} from '@actions/github/lib/context'
+import path from 'path'
 
 export async function action(
   core: typeof Core,
-  exec: typeof Exec,
-  context: Context,
-  getOctokit: typeof GetOctokit
+  exec: typeof Exec
 ): Promise<void> {
-  const token = core.getInput('github-token', {required: true})
-  const octokit = getOctokit(token)
-  const {stdout, exitCode} = await exec.getExecOutput('mypy', ['test'], {
-    ignoreReturnCode: true,
-  })
+  const exitCode = await exec.exec('mypy', ['test'], {ignoreReturnCode: true})
 
-  const annotations = parseLogs(core, stdout)
-
-  await sendChecks(context, octokit, annotations)
+  const matchersDir = path.join(__dirname, '../')
+  core.info(`##[add-matcher]${path.join(matchersDir, 'mypy.json')}`)
 
   if (exitCode !== 0) {
     throw new Error('mypy has returned errors')
   }
-}
-
-interface Annotation {
-  file: string
-  line: number
-  message: string
-}
-
-function parseLogs(core: typeof Core, logs: string): Annotation[] {
-  return logs.split('\n').flatMap(line => {
-    const annotation = parseLine(line)
-    if (annotation !== null && annotation) {
-      return [annotation]
-    } else {
-      return []
-    }
-  })
-}
-
-function parseLine(line: string): Annotation | null {
-  const matches = line.match(/^([^:]+):([0-9]+): (.+)$/)
-  if (!matches) {
-    return null
-  }
-
-  return {file: matches[1], line: Number(matches[2]), message: matches[3]}
-}
-
-async function sendChecks(
-  context: Context,
-  octokit: InstanceType<typeof GitHub>,
-  annotations: Annotation[]
-): Promise<void> {
-  octokit.rest.checks.create({
-    repo: context.repo.repo,
-    owner: context.repo.owner,
-    output: {
-      annotations,
-    },
-  })
 }

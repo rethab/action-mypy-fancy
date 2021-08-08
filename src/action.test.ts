@@ -4,28 +4,13 @@ import {action} from './action'
 
 describe('action', () => {
   const info = jest.fn()
-  const getInput = jest.fn()
   const getExecOutput = jest.fn()
-  const createCheck = jest.fn()
 
-  const octokit = {rest: {checks: {create: createCheck}}}
-  const getOctokit = jest.fn().mockReturnValue(octokit)
-
-  const core = {info, getInput} as unknown as typeof Core
+  const core = {info} as unknown as typeof Core
   const exec = {getExecOutput} as unknown as typeof Exec
 
-  it('should create the octokit using the github-token input', async () => {
-    getInput.mockReturnValue('my-secret-token')
-    getExecOutput.mockResolvedValue({stdout: '', exitCode: 0})
-
-    await action(core, exec, getOctokit)
-
-    expect(getInput).toHaveBeenCalledWith('github-token', {required: true})
-    expect(getOctokit).toHaveBeenCalledWith('my-secret-token')
-  })
-
   it('should pass arguments to exec call', async () => {
-    await action(core, exec, getOctokit)
+    await action(core, exec)
 
     expect(getExecOutput).toHaveBeenCalledWith('mypy', ['test'], {
       ignoreReturnCode: true,
@@ -38,9 +23,7 @@ describe('action', () => {
       exitCode: 1,
     })
 
-    await expect(action(core, exec, getOctokit)).rejects.toThrow(
-      'mypy has returned errors'
-    )
+    await expect(action(core, exec)).rejects.toThrow('mypy has returned errors')
 
     expect(createCheck).toHaveBeenCalledTimes(1)
   })
