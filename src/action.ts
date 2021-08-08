@@ -9,7 +9,9 @@ export async function action(
   const exitCode = await exec.exec('mypy', ['test'], {ignoreReturnCode: true})
 
   const matchersDir = path.join(__dirname, '../')
+  core.info('Add matcher')
   core.info(`##[add-matcher]${path.join(matchersDir, 'mypy.json')}`)
+  core.info('After add matcher')
 
   if (exitCode !== 0) {
     throw new Error('mypy has returned errors')

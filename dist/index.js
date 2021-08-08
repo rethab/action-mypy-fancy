@@ -15,7 +15,9 @@ const path_1 = __importDefault(__nccwpck_require__(622));
 async function action(core, exec) {
     const exitCode = await exec.exec('mypy', ['test'], { ignoreReturnCode: true });
     const matchersDir = path_1.default.join(__dirname, '../');
+    core.info('Add matcher');
     core.info(`##[add-matcher]${path_1.default.join(matchersDir, 'mypy.json')}`);
+    core.info('After add matcher');
     if (exitCode !== 0) {
         throw new Error('mypy has returned errors');
     }
