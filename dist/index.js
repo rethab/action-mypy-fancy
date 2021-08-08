@@ -9,7 +9,7 @@
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.action = void 0;
 async function action(core, exec) {
-    const { stdout } = await exec.getExecOutput('mypy');
+    const { stdout } = await exec.getExecOutput('mypy', ['test']);
     core.info(stdout);
 }
 exports.action = action;
