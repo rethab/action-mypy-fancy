@@ -3,14 +3,19 @@
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 139:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.action = void 0;
+const path_1 = __importDefault(__nccwpck_require__(622));
 async function action(core, exec) {
-    const { stdout } = await exec.getExecOutput('mypy', ['test']);
-    core.info(stdout);
+    const matcherPath = path_1.default.join(__dirname, '../', 'mypy.json');
+    core.info(`##[add-matcher]${matcherPath}`);
+    await exec.exec('mypy', ['test']);
 }
 exports.action = action;
 
@@ -52,7 +57,7 @@ async function run() {
         core.setFailed(error.message);
     }
 }
-run();
+void run();
 
 
 /***/ }),

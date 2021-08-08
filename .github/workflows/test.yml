@@ -23,3 +23,6 @@ jobs:
       - run: pip install mypy
       - uses: actions/checkout@v2
       - uses: ./
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
