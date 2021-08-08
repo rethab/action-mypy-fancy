@@ -1,6 +1,6 @@
-'use strict'
-Object.defineProperty(exports, '__esModule', {value: true})
-const config = {
+import type {Config} from '@jest/types'
+
+const config: Config.InitialOptions = {
   clearMocks: true,
   coverageThreshold: {
     global: {
@@ -10,11 +10,12 @@ const config = {
       statements: 100,
     },
   },
-  moduleFileExtensions: ['js', 'ts'],
+  moduleFileExtensions: ['ts'],
   testMatch: ['**/*.test.ts'],
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
   verbose: true,
 }
-exports.default = config
+
+export default config
